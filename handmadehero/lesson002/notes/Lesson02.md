@@ -32,8 +32,4 @@
   PWNDCLASSA -> tagWNDCLASSA *
   ```
 
-  
-
-  
-
-  
+* 剩下的就是windows窗口创建的固定框架，没什么好说的
