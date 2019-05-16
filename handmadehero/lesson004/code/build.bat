@@ -1,4 +1,4 @@
-#@echo off
+@echo off
 IF not EXIST %~dp0\..\build (
     echo "not has dir"
     mkdir %~dp0\..\build
