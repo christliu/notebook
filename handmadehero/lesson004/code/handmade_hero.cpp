@@ -14,11 +14,33 @@ static bool Running = true;
 
 global_variable BITMAPINFO BitmapInfo;
 global_variable void *BitmapMemory;
-//global_variable HBITMAP BitmapHandle;
-//global_variable HDC BitmapDeviceContext;
 
 global_variable int BitmapHeight;
 global_variable int BitmapWidth;
+global_variable int BytesPerPixel = 4;
+
+
+internal void
+Draw(int xoffset, int yoffset)
+{
+    uint8* Row = (uint8*)BitmapMemory; 
+    for(int Y = 0; Y < BitmapHeight; ++Y)
+    {
+        uint32* Pixel = (uint32*)Row;
+        for(int X = 0; X < BitmapWidth; ++X)
+        {
+            uint8 Red = 0;
+            uint8 Green = Y + yoffset;
+            uint8 Blue = X + xoffset;
+
+            *Pixel = Blue << 8 | Green;
+            Pixel ++;
+            
+        }
+        Row += BitmapWidth * BytesPerPixel;
+    }
+}
+
 
 internal void
 Win32ResizeDIBSection(int width, int height)
@@ -38,34 +60,11 @@ Win32ResizeDIBSection(int width, int height)
     BitmapInfo.bmiHeader.biBitCount = 32;
     BitmapInfo.bmiHeader.biCompression = BI_RGB;
     
-    int BytesPerPixel = 4;
     int BitmapMemorySize = (BitmapWidth * BitmapHeight) * BytesPerPixel;
     BitmapMemory = VirtualAlloc(0, BitmapMemorySize, MEM_COMMIT, PAGE_READWRITE);
 
-    uint8* Row = (uint8*)BitmapMemory; 
-    for(int Y = 0; Y < BitmapHeight; ++Y)
-    {
-        uint8* Pixel = (uint8*)Row;
-        for(int X = 0; X < BitmapWidth; ++X)
-        {
-            // Blue
-            *Pixel = X;
-            Pixel ++;
-            
-            // Green
-            *Pixel = Y;
-            Pixel ++;
-            
-            // Red
-            *Pixel = 255;
-            Pixel ++;
+    Draw(0, 0);
 
-            // Red
-            *Pixel = 0;
-            Pixel ++;
-        }
-        Row += BitmapWidth * BytesPerPixel;
-    }
 }
 
 internal void 
@@ -170,18 +169,34 @@ INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         if(WindowHandle)
         {
             MSG Message;
+
+            int xoffset = 0;
+            int yoffset = 0;
             while(Running)
             {
-                bool MessageResult = GetMessage(&Message, 0, 0, 0);
-                if(MessageResult > 0)
+                bool MessageResult = PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE);
+                //bool MessageResult = GetMessage(&Message, 0, 0, 0);
+                while(PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE))
                 {
+                    if(Message.message == WM_QUIT)
+                    {
+                        Running = false;
+                    }
+
                     TranslateMessage(&Message);
                     DispatchMessage(&Message);
                 }
-                else
-                {
-                    break;
-                }
+                Draw(xoffset, yoffset);
+
+                HDC DeviceContext = GetDC(WindowHandle);
+                RECT ClientRect;
+                GetClientRect(WindowHandle, &ClientRect);
+
+                Win32UpdateWindow(DeviceContext, &ClientRect, 0, 0, 
+                        ClientRect.right - ClientRect.left, ClientRect.bottom - ClientRect.top);
+
+                ++xoffset;
+                //++yoffset;
             }
         }
         else
