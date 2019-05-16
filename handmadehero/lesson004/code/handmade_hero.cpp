@@ -175,7 +175,6 @@ INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             while(Running)
             {
                 bool MessageResult = PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE);
-                //bool MessageResult = GetMessage(&Message, 0, 0, 0);
                 while(PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE))
                 {
                     if(Message.message == WM_QUIT)
