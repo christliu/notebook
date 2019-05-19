@@ -8,6 +8,12 @@
 
 * 将像素数据写在内存当中的时候，内存中的数据是小端字节序。因此如果一个字节一个字节写的话，要先写Blue，再写Green，再写Red。最后写字节对齐。如果是直接写uint32_t，则直接写0RGB，即：Red << 16 | Green << 8 | Blue. 其中0为字节对齐，会出现在最高字节。
 
-> Memory: BB GG RR xx
->
-> Register:  xx RR GG BB
+  > Memory: BB GG RR xx
+  >
+  > Register: xx RR GG BB
+
+* GetMessage会阻塞在获取消息的时候， PeekMessage没有消息会直接返回。
+
+  > 注意PeekMessage要用while包起来，让每帧可以处理完所有的消息。这是个新手常见的坑。
+
+  
