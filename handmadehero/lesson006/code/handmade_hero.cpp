@@ -164,10 +164,9 @@ WindowProc(HWND hwnd,
         case WM_KEYDOWN:
         case WM_KEYUP:
         {
-            OutputDebugString("KEY UP\n");
             uint32 VKCODE = wParam;
             bool WasDown = ((lParam & (1 << 30)) !=0);
-            bool IsDown = ((lParam & (1 << 31)) !=0);
+            bool IsDown = ((lParam & (1 << 31)) ==0);
 
             if(WasDown != IsDown)
             {
@@ -185,6 +184,7 @@ WindowProc(HWND hwnd,
                     {
                         OutputDebugString("WasDown");
                     }
+                    OutputDebugString("\n");
                 }
                 else if(VKCODE == 'S')
                 {
@@ -221,6 +221,7 @@ WindowProc(HWND hwnd,
                     {
                         OutputDebugString("WasDown");
                     }
+                    OutputDebugString("\n");
                 }
             }
 
@@ -294,8 +295,8 @@ INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             Win32ResizeDIBSection(&BackBuffer, 1200, 900);
             while(Running)
             {
-                bool MessageResult = PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE);
-                while(PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE))
+                //while(PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE))
+                while(PeekMessage(&Message, 0, 0, 0, PM_REMOVE))
                 {
                     if(Message.message == WM_QUIT)
                     {
