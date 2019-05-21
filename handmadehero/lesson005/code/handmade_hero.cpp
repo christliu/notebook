@@ -192,7 +192,6 @@ INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             Win32ResizeDIBSection(&BackBuffer, 1200, 900);
             while(Running)
             {
-                bool MessageResult = PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE);
                 while(PeekMessage(&Message, WindowHandle, 0, 0, PM_REMOVE))
                 {
                     if(Message.message == WM_QUIT)
